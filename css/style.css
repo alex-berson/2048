@@ -1,0 +1,153 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url(../fonts/roboto-regular-webfont.woff);
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url(../fonts/roboto-bold-webfont.woff);
+    font-weight: bold;
+}
+
+:root {
+    --size: 4;
+    --board-size: 0.85;
+}
+
+body {
+    font-family: 'Roboto', serif;
+    margin: 0;
+    transition: opacity 1s ease-in-out;
+    opacity: 0;
+}
+
+#outer {
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+  
+#middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+  
+#inner {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 22vw;
+    margin-top: 0;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.board {
+ 
+    display: grid;
+    grid-template-columns: repeat(4, minmax(25%, 1fr));
+
+    padding: 4px;
+    border: 10px solid darkgrey;
+
+    background-color: lavender;
+    height: var(--board-size);
+    width: var(--board-size);
+    margin: auto;
+
+}
+
+.tile {
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -3px;
+    text-indent: -3px;
+
+
+  
+    height: calc((var(--board-size) - 32px)/ var(--size));
+    width: calc((var(--board-size) - 32px) / var(--size));
+
+    margin: 4px;
+    font-size: 9vmin;
+    text-align: center;
+    background-color: lightgrey;
+}
+
+#designed {
+    text-align: center;
+    align-self: auto;
+    color: white;
+    font-size: 0.60em; 
+    margin-top: -1.35em;
+
+}
+
+.tile:hover {
+      cursor: pointer;
+}
+
+@media (orientation: landscape) and (max-height: 460px) {
+
+    h1 {
+        display: none;
+    }
+
+    .board {
+        margin-top: 20px;
+    }
+}
+
+@media (min-width: 460px) and (min-height: 460px) {
+
+    :root {
+        --board-size-big: 400px;
+    }
+
+    h1 {
+        font-size: 6.7em;
+    }
+
+    .board {
+        padding: 4px;
+        border: 15px solid darkgray;
+        
+
+        width: var(--board-size-big);
+        height: var(--board-size-big);
+
+    }
+
+    .tile {
+
+        font-size: 6vmin;
+        text-align: center;
+        margin: 4px;
+        height: 92px;
+        width: 92px;
+    }
+
+    #designed {
+        font-size: 0.8em; 
+        margin-top: -1.3em;
+    }
+}
+
+.noselect {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
+}
+ 
