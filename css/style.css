@@ -64,13 +64,13 @@ h1 {
 }
 
 .tile {
-
+    font-weight: bold;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: -3px;
-    text-indent: -3px;
+    letter-spacing: -2px;
+    text-indent: -2px;
 
 
   
@@ -115,6 +115,8 @@ h1 {
 
     h1 {
         font-size: 6.7em;
+        /* letter-spacing: 22px; */
+        /* text-indent: 22px; */
     }
 
     .board {
