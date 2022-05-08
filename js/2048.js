@@ -1,6 +1,6 @@
 const size = 4;
 let board = [];
-let score= 0;
+let score = 0;
 
 const showBoard = () => document.querySelector('body').style.opacity = 1;
 
@@ -37,14 +37,14 @@ const initBoard = () => {
     //  [4, 4, 4, 2]
     //];
 
-    addNumber();
-    addNumber();
+    addNumber(board);
+    addNumber(board);
 }
 
-const changed = (oldBoard, board) => {
+const changed = (board1, board2) => {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
-            if (oldBoard[i][j] != board[i][j]) return true;
+            if (board1[i][j] != board2[i][j]) return true;
         }
     }
     return false;
@@ -63,76 +63,202 @@ const move = (e) => {
         // case 'ArrowLeft': changed = slideLeft();break;
         // case 'ArrowRight': changed = slideRight(); break;
 
-        case 'ArrowDown': slideDown(); break;
-        case 'ArrowUp': slideUp(); break;
-        case 'ArrowLeft': slideLeft();break;
-        case 'ArrowRight': slideRight(); break;
+        case 'ArrowDown': slideDown(board); break;
+        case 'ArrowUp': slideUp(board); break;
+        case 'ArrowLeft': slideLeft(board);break;
+        case 'ArrowRight': slideRight(board); break;
     }
 
-    if (won())  {
+    if (won(board))  {
         setTimeout(() => console.log("Game Over"), 200);
         return;
     }
 
     if (changed(oldBoard, board)) {
-        addNumber();
-        updateBoard();
+        addNumber(board);
+        updateBoard(board);
         // console.table(board.map(arr => arr.slice()));
 
     }
 
-    if (gameOver())  setTimeout(() => console.log("Game Over"), 200);
+    if (terminal(board))  setTimeout(() => console.log("Game Over"), 200);
+}
+
+const mcs = (board) => {
+
+    let iterations = 0;
+
+    let moves = [[0,0],[0,0],[0,0],[0,0]];
+
+    do {
+
+        let i = 0;
+        let first = null;
+        let score = 0;
+
+        // let newBoard = board;
+
+        let newBoard = board.map(arr => arr.slice());
+
+        do {
+
+            let direction = Math.floor(Math.random() * size);
+            let oldBoard = newBoard.map(arr => arr.slice());
+
+            switch (direction) {
+                case 0: score += slideDown(newBoard); break;
+                case 1: score += slideUp(newBoard); break;
+                case 2: score += slideLeft(newBoard);break;
+                case 3: score += slideRight(newBoard); break;
+            }
+
+            if (changed(oldBoard, newBoard)) {
+
+                i++;
+
+                if (first == null) first = direction;
+
+                if (won(newBoard))  {
+                    // console.log("Game Over", i);
+                    // updateBoard(newBoard);    
+                    break;
+                }
+
+                addNumber(newBoard);
+
+                // if (terminal(board))  {
+
+                //     // j++;
+                    
+                //     console.log("Game Over", i, scores(board));
+                //     // initBoard();  
+                //     // i = 0;  
+                //     // continue;
+                //     updateBoard();    
+        
+                //     return;
+                // }
+            }
+
+        } while (!terminal(newBoard));
+
+    
+    // console.log("Game Over", i, scores(newBoard), first);
+
+    // updateBoard(newBoard); 
+
+    moves[first][0]++;
+    // moves[first][1] += scores(newBoard);
+    moves[first][1] += score;
+
+    
+    } while (iterations++ < 5000);
+
+    // console.table(moves);
+
+    let bestMove;
+    let bestScore = -Infinity;
+
+    for (let [i, move] of moves.entries()) {
+        if (move[0] == 0) continue;
+
+        // console.log(move, i);
+
+        if (move[1] / move[0] > bestScore) [bestMove, bestScore] = [i, move[1] / move[0]];
+    }
+
+    // console.log(bestMove);
+
+    // if (bestMove == undefined) console.table(moves);
+
+    return bestMove;
 }
 
 const auto = () => {
 
-    let i = 0;
-    let j = 0;
+    let iterations = 0
+    let lost = 0;
 
-    do {
+    while (true) {
 
-        let direction = Math.floor(Math.random() * size);
-        let oldBoard = board.map(arr => arr.slice());
+        // console.time()
 
-        switch (direction) {
-            case 0: slideDown(); break;
-            case 1: slideUp(); break;
-            case 2: slideLeft();break;
-            case 3: slideRight(); break;
+        let slides = 0;
+        initBoard();
+        iterations++;
+
+        do {
+
+            let direction = mcs(board);
+
+            // if (direction == undefined) {
+                
+            //     console.log(i, scores(board));
+
+            //     console.table(board);
+            //     return;
+            // }
+
+            // console.log(direction);
+            let oldBoard = board.map(arr => arr.slice());
+
+            switch (direction) {
+                case 0: slideDown(board); break;
+                case 1: slideUp(board); break;
+                case 2: slideLeft(board);break;
+                case 3: slideRight(board); break;
+            }
+
+            if (changed(oldBoard, board)) {
+
+                if (won(board))  {
+                    // console.log("Game Over", i);
+                    // updateBoard(board);    
+                    break;
+                }
+
+                addNumber(board);
+
+                // updateBoard(board);
+
+                // if (terminal(board))  {
+
+                //     // j++;
+                    
+                //     console.log("Game Over", i, scores(board));
+                //     // initBoard();  
+                //     // i = 0;  
+                //     // continue;
+                //     updateBoard();    
+        
+                //     return;
+                // }
+            }
+
+            slides++;
+
+        } while (!terminal(board));
+
+
+        console.log(iterations, slides, scores(board));
+
+        if (scores(board) < 10000) {
+            lost++;
+            console.log(lost);
+            console.table(board);
         }
-    
-        if (won())  {
-            console.log("Game Over", i, j);
-            updateBoard();    
-            return;
-        }
-    
-        if (changed(oldBoard, board)) {
-            addNumber();
-            // updateBoard();    
-        }
-    
-        if (gameOver())  {
+        // console.timeEnd();
 
-            j++;
-            
-            // console.log("Game Over", i);
-            initBoard();  
-            i = 0;  
-            continue;
-        }
 
-        i++;
+    }
 
-    } while (!won());
 
-    updateBoard();    
-
+    // updateBoard(board);
 }
 
 const enableMoves = () => document.addEventListener('keydown', move);
 
-const updateBoard = () => {
+const updateBoard = (board) => {
 
     const board1d = board.flat();
 
@@ -141,10 +267,12 @@ const updateBoard = () => {
     });
 }
 
-const addNumber = () => {
+const addNumber = (board) => {
 
     // let i, j;
     let freeCells = [];
+
+    // console.log(board);
 
     // do {
     //     i = Math.floor(Math.random() * size);
@@ -159,14 +287,37 @@ const addNumber = () => {
 
     // console.log(freeCells);
 
+    // freeCells
+
     let [i, j] = freeCells[Math.floor(Math.random() * freeCells.length)];
 
     board[i][j] = Math.random() <= 0.1 ? 4 : 2;
 }
 
+const scores = (board) => {
+
+    let score = 0;
+    let empty = 0;
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            score += board[i][j];
+            if (board[i][j] == 2048) score += 10000;
+
+
+            // if (board[i][j] > score) score = board[i][j];
+        }
+    }
+
+    return empty == 0 ? score : score / empty;
+
+}
+
 const compress = vector => vector.filter(Boolean);
 
 const combine = (vector) => {
+
+    let score = 0;
 
     for (let i = 0; i < vector.length - 1; i++) {
         if (vector[i] == vector[i + 1]) {
@@ -177,10 +328,12 @@ const combine = (vector) => {
         }
     }
 
-    return vector;
+    return [vector, score];
 }
 
 const slide = (vector) => {
+
+    let score;
     
     vector = compress(vector);
 
@@ -193,16 +346,16 @@ const slide = (vector) => {
     //   }  
     // } 
 
-    vector = combine(vector);
+    [vector, score] = combine(vector);
 
     vector = compress(vector);
 
     while (vector.length < size) vector.push(0);
 
-    return vector;
+    return [vector, score];
 }
 
-const flip = () => {
+const flip = (board) => {
     // for (let y = 0; y < size; y++) {
     //     for (let xLeft = 0, xRight = size - 1; xLeft < xRight; xLeft++, xRight--) {
     //       [board[y][xLeft], board[y][xRight]] = [board[y][xRight], board[y][xLeft]];
@@ -216,7 +369,7 @@ const flip = () => {
 
 }
 
-const transpose = () => {
+const transpose = (board) => {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < i; j++) {
             [board[i][j], board[j][i]] = [board[j][i], board[i][j]];
@@ -224,51 +377,62 @@ const transpose = () => {
     }
 }
 
-const slideLeft = () => {
+const slideLeft = (board) => {
 
     // let changed = false;
+
+    let score = 0;
 
     for (let i = 0; i < size; i++) {
 
         // let oldBoard = board.slice();
 
-        board[i] = slide(board[i]);
+        let scoreI;
+
+        [board[i], scoreI] = slide(board[i]);
+
+        score += scoreI;
+
 
         // changed = changed || (board[i].join(',') != oldBoard[i].join(','));
     }
 
     // return changed;
+    return score;
 }
 
-const slideRight = () => {
-    flip();
+const slideRight = (board) => {
+    flip(board);
     // let changed = slideLeft();
-    slideLeft();
+    let score = slideLeft(board);
 
-    flip();
+    flip(board);
     // return changed;
+    return score;
 }
 
 
-const slideUp = () => {
-    transpose();
+const slideUp = (board) => {
+    transpose(board);
     // let changed = slideLeft();
-    slideLeft();
+    let score = slideLeft(board);
 
-    transpose();
+    transpose(board);
     // return changed;
+    return score;
 }
 
-const slideDown = () => {
-    transpose();
+const slideDown = (board) => {
+    transpose(board);
     // let changed = slideRight();
-    slideRight();
+    let score = slideRight(board);
 
-    transpose();
+    transpose(board);
     // return changed;
+    return score;
 }
 
-const won = () => {
+const won = (board) => {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
           if (board[i][j] == 2048) return true;
@@ -277,7 +441,7 @@ const won = () => {
       return false;
 }
 
-const gameOver = () => {
+const terminal = (board) => {
 
     // for (let x = 0; x < size; x++) {
     //   for (let y = 0; y < size; y++) {
@@ -300,11 +464,16 @@ const init = () => {
 
     initBoard();
     setBoardSize();
-    updateBoard();
+    updateBoard(board);
     showBoard();
     enableMoves();
 
-    // auto();
+    // setTimeout(() => {
+        // auto(board);
+    // }, 2000); 
+    
 }
 
 window.onload = () => document.fonts.ready.then(init()); 
+
+// init();
