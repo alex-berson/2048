@@ -1,6 +1,7 @@
 const size = 4;
 let board = [];
 let score = 0;
+let touchstartX, touchstartY;
 
 const showBoard = () => document.querySelector('body').style.opacity = 1;
 
@@ -18,6 +19,18 @@ const setBoardSize = () => {
 
     document.documentElement.style.setProperty('--board-size', boardSize + 'px');
     // document.documentElement.style.setProperty('--tile-size', boardSize / size - 1 + 'px');
+}
+
+const shuffle = (array) => {
+
+    for (let i = array.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]]; 
+    }
+
+    return array;
 }
 
 const initBoard = () => {
@@ -50,23 +63,30 @@ const changed = (board1, board2) => {
     return false;
 }
 
-const move = (e) => {
+const move = (direction) => {
 
     // let changed;
-    let code = e.key;
+    // let code = e.key;
     let oldBoard = board.map(arr => arr.slice());
     // console.table(oldBoard);
 
-    switch (code) {
+    switch (direction) {
         // case 'ArrowDown': changed = slideDown(); break;
         // case 'ArrowUp': changed = slideUp(); break;
         // case 'ArrowLeft': changed = slideLeft();break;
         // case 'ArrowRight': changed = slideRight(); break;
 
-        case 'ArrowDown': slideDown(board); break;
-        case 'ArrowUp': slideUp(board); break;
-        case 'ArrowLeft': slideLeft(board);break;
-        case 'ArrowRight': slideRight(board); break;
+        case 'up': 
+            slideUp(board); 
+            break;
+        case 'right': 
+            slideRight(board); 
+            break;
+        case 'down': 
+            slideDown(board); 
+            break;
+        case 'left': 
+            slideLeft(board);
     }
 
     if (won(board))  {
@@ -101,15 +121,21 @@ const mcs = (board) => {
         let newBoard = board.map(arr => arr.slice());
 
         do {
-
             let direction = Math.floor(Math.random() * size);
             let oldBoard = newBoard.map(arr => arr.slice());
 
             switch (direction) {
-                case 0: score += slideDown(newBoard); break;
-                case 1: score += slideUp(newBoard); break;
-                case 2: score += slideLeft(newBoard);break;
-                case 3: score += slideRight(newBoard); break;
+                case 0: 
+                    score += slideUp(newBoard); 
+                    break;
+                case 1: 
+                    score += slideRight(newBoard); 
+                    break;
+                case 2: 
+                    score += slideDown(newBoard); 
+                    break;
+                case 3: 
+                    score += slideLeft(newBoard);
             }
 
             if (changed(oldBoard, newBoard)) {
@@ -152,7 +178,7 @@ const mcs = (board) => {
     moves[first][1] += score;
 
     
-    } while (iterations++ < 5000);
+    } while (iterations++ < 10000);
 
     // console.table(moves);
 
@@ -203,10 +229,17 @@ const auto = () => {
             let oldBoard = board.map(arr => arr.slice());
 
             switch (direction) {
-                case 0: slideDown(board); break;
-                case 1: slideUp(board); break;
-                case 2: slideLeft(board);break;
-                case 3: slideRight(board); break;
+                case 0: 
+                    slideUp(board); 
+                    break;
+                case 1: 
+                    slideRight(board); 
+                    break;
+                case 2: 
+                    slideDown(board); 
+                    break;
+                case 3: 
+                    slideLeft(board);
             }
 
             if (changed(oldBoard, board)) {
@@ -460,13 +493,64 @@ const terminal = (board) => {
     return true;
 }
 
+const disableTapZoom = () => {
+    const preventDefault = (e) => e.preventDefault();
+    document.body.addEventListener('touchstart', preventDefault, {passive: false});
+}
+
+const enableKeys = () => document.addEventListener('keydown', e => {
+
+    const code = e.key
+
+    switch (code) {
+        case 'ArrowUp': 
+            move('up'); 
+            break;
+        case 'ArrowRight': 
+            move('right'); 
+            break;
+        case 'ArrowDown': 
+            move('down');
+            break;
+        case 'ArrowLeft': 
+            move('left');
+    }
+});
+
+const enableTouch = () => {
+
+    document.querySelector('.board').addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+        touchstartY = e.changedTouches[0].screenY;
+    });
+
+    document.querySelector('.board').addEventListener('touchend', e => {
+
+        const touchendX = e.changedTouches[0].screenX;
+        const touchendY = e.changedTouches[0].screenY;
+        const dx = touchendX - touchstartX;
+        const dy = touchendY - touchstartY;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+    
+        if (Math.max(absDx, absDy) > 10) {
+
+            let direction = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+
+            move(direction);
+        }    
+    });
+}
+
 const init = () => {
 
     initBoard();
+    disableTapZoom();
     setBoardSize();
     updateBoard(board);
     showBoard();
-    enableMoves();
+    enableKeys();
+    enableTouch();
 
     // setTimeout(() => {
         // auto(board);
