@@ -2,6 +2,7 @@ const size = 4;
 let board = [];
 let score = 0;
 let touchstartX, touchstartY;
+let id = 0;
 
 const showBoard = () => document.querySelector('body').style.opacity = 1;
 
@@ -44,14 +45,16 @@ const initBoard = () => {
 
 
     // board = [
-        [4, 128, 2, 4],
-    //  [2, 16, 4, 8],
-    //  [16, 64, 16, 2],
-    //  [4, 4, 4, 2]
-    //];
+    //    [2, 4, 2, 8],
+    //  [16, 2, 16, 4],
+    //  [2, 4, 8, 4],
+    //  [8, 64, 4, 0]
+    // ];
+
+    // console.log(isNaN(board[0][0]));
 
     addNumber(board);
-    addNumber(board);
+    addNumber(board);    
 }
 
 const changed = (board1, board2) => {
@@ -63,11 +66,249 @@ const changed = (board1, board2) => {
     return false;
 }
 
+const markBoard = (board) => {
+
+    let boardxy = [];
+
+    for (let i = 0; i < size; i++) {
+
+        let row = [];
+
+        for (let j = 0; j < size; j++) {
+            row.push({value: board[i][j], x: i, y: j})
+        }
+
+        boardxy.push(row);
+    }
+
+    return boardxy;
+
+}
+
+const unmarkBoard = (board, boardxy) => {
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            board[i][j] = boardxy[i][j] == 0 ? 0 : boardxy[i][j].value;
+        }
+    }
+}
+
+const slideTiles = (boardxy) => {
+
+    const cells = document.querySelectorAll('.cell');
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+           
+            if (boardxy[i][j] != 0 && (boardxy[i][j].x != i || boardxy[i][j].y != j)) {
+
+                const cell = cells[i * size + j];
+
+                const cell2 = cells[boardxy[i][j].x * size + boardxy[i][j].y];
+
+                // console.log(cell2);
+
+
+                // const rect = cell2.getBoundingClientRect();
+                // const x = rect.left + rect.width / 2;
+                // const y = rect.top + rect.height / 2;
+                // const el = document.elementFromPoint(x, y);
+
+                // tile = document.querySelector(`#${el.id}`);
+
+
+                // console.log(document.elementsFromPoint(x, y));
+                // console.log(el.id);
+
+
+                const tile = document.querySelector(`#t${boardxy[i][j].x * size + boardxy[i][j].y}`);
+
+                tile.style.top = `${cell.offsetTop}px`;
+                tile.style.left = `${cell.offsetLeft}px`;
+                // tile.id = `t${i * size + j}`;
+
+                tile.i = i;
+                tile.j = j;
+
+                if (boardxy[i][j].x1 == undefined) {
+                    tile.addEventListener('transitionend', e => {
+                        e.currentTarget.id = `t${tile.i * size + tile.j}`;
+                    }, {once: true}); 
+                } else {
+                    tile.addEventListener('transitionend', e => {
+                        e.currentTarget.remove();
+                    }, {once: true}); 
+                }
+
+                
+
+
+
+                // tile.style.transform = `translate(${cell.offsetLeft - tile.offsetLeft}px, ${tile.offsetTop - cell.offsetTop}px)`;
+            }
+
+            if (boardxy[i][j].x1 != undefined && (boardxy[i][j].x1 != i || boardxy[i][j].y1 != j)) {
+
+                const cell = cells[i * size + j];
+
+                const cell3 = cells[boardxy[i][j].x1 * size + boardxy[i][j].y1];
+
+                // const rect = cell3.getBoundingClientRect();
+                // const x = rect.left + rect.width / 2;
+                // const y = rect.top + rect.height / 2;
+                // const el = document.elementFromPoint(x, y);
+                // console.log(el.id);
+
+                // tile = document.querySelector(`#${el.id}`);
+
+                const tile1 = document.querySelector(`#t${boardxy[i][j].x * size + boardxy[i][j].y}`);
+
+
+                const tile = document.querySelector(`#t${boardxy[i][j].x1 * size + boardxy[i][j].y1}`);
+
+
+                tile.style.zIndex = 100;
+
+                // let num = boardxy[i][j].value
+
+                tile.style.top = `${cell.offsetTop}px`;
+                tile.style.left = `${cell.offsetLeft}px`;
+
+                tile.i = i;
+                tile.j = j;
+
+                tile.addEventListener('transitionend', e => {
+
+                    tile1.remove();
+
+                    const tile = e.currentTarget;
+
+                    // console.log(tile.innerText);
+
+                    // tile.innerText = parseInt(tile.innerText) * 2; 
+
+                    tile.innerText = boardxy[tile.i][tile.j].value; 
+
+    
+                    // console.log(boardxy[tile.i][tile.j].value);
+                    // console.log(parseInt(tile.j));
+
+
+
+                    // console.log(boardxy[parseInt(tile.i)][parseInt(tile.j)]);
+
+
+
+                    const power = Math.log2(parseInt(tile.innerText));
+                    const backgroundLightness = 100 - power * 9;
+                    const textLightness = backgroundLightness <= 50 ? 90 : 10;
+                
+                    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+                    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+                    tile.id = `t${tile.i * size + tile.j}`;
+
+
+
+                    // tile.style.animation = 'pop 0.1s ease forwards';
+
+                    // tile.addEventListener('animationend', e => {
+                    //     tile.style.animation = '';
+                    // }, {once: true}); 
+
+
+
+                    // tile.style.opacity = 1;
+                    // tile.classList.remove('appear');
+
+
+                    // tile.style.transform += 'scale(2)';
+
+
+                    // console.log(tile);
+
+                    // const rect = tile.getBoundingClientRect();
+
+                    // const x = rect.left + rect.width / 2;
+                    // const y = rect.top + rect.height / 2;
+                    // const el = document.elementsFromPoint(x, y)[1];
+
+                    // el.remove();
+
+                    // el.classList.remove('visible');
+
+                    // el.style.opacity = 0;
+
+                    // el.style.display = "none";
+
+                    tile.classList.add('pop');
+
+                    // tile.style.animation = `pop 0.2s ease 0.1s forwards`;
+
+
+                    tile.style.zIndex = 'auto';
+
+                    // enableKeys();
+                    // enableTouch();
+
+
+                }, {once: true}); 
+
+                tile.addEventListener('animationend', e => {
+
+                    let tile = e.currentTarget;
+                    
+                    tile.classList.remove('pop');
+                }, {once: true});
+
+
+
+                // setTimeout(() => {
+                    // document.querySelector(`#t${i * size + j}`).classList.remove('appear');
+                    // document.querySelector(`#t${i * size + j}`).removeAttribute('id');
+
+                    // tile.id = `t${i * size + j}`;
+                    // tile.innerText = parseInt(tile.innerText) * 2; 
+                // }, 110);
+
+                // tile.style.transform = `translate(${cell.offsetLeft - tile.offsetLeft}px, ${tile.offsetTop - cell.offsetTop}px)`;
+            }
+        }
+    }
+}
+
+const checkBoard = () => {
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (board[i][j] != 0) {
+                if (document.querySelector(`#t${i * size + j}`).innerText != board[i][j]) return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 const move = (direction) => {
 
     // let changed;
     // let code = e.key;
     let oldBoard = board.map(arr => arr.slice());
+
+    let boardxy = markBoard(board);
+
+    // console.log(boardxy);
+
+    // console.log(isNaN(board[0][0]));
+    // console.log(isNaN(boardxy[0][0]));
+
+
+
+    // if (checkBoard()) {
+    //     alert("ERRER");
+    //     return;
+    // }
     // console.table(oldBoard);
 
     switch (direction) {
@@ -77,17 +318,25 @@ const move = (direction) => {
         // case 'ArrowRight': changed = slideRight(); break;
 
         case 'up': 
-            slideUp(board); 
+            slideUp(boardxy); 
             break;
         case 'right': 
-            slideRight(board); 
+            slideRight(boardxy); 
             break;
         case 'down': 
-            slideDown(board); 
+            slideDown(boardxy); 
             break;
         case 'left': 
-            slideLeft(board);
+            slideLeft(boardxy);
     }
+
+    unmarkBoard(board, boardxy);
+
+    console.log(board.map(arr => arr.slice()));
+
+
+
+    console.log(boardxy.map(arr => arr.slice()));
 
     if (won(board))  {
         setTimeout(() => console.log("Game Over"), 200);
@@ -95,10 +344,20 @@ const move = (direction) => {
     }
 
     if (changed(oldBoard, board)) {
-        addNumber(board);
-        updateBoard(board);
+        // console.log("changed")
+        slideTiles(boardxy);
+
+        let [i, j, num] = addNumber(board);
+
+        placeNumber(i, j, num);
+
+        // updateBoard(board);
         // console.table(board.map(arr => arr.slice()));
 
+
+    } else {
+        enableKeys();
+        enableTouch();
     }
 
     if (terminal(board))  setTimeout(() => console.log("Game Over"), 200);
@@ -178,7 +437,7 @@ const mcs = (board) => {
     moves[first][1] += score;
 
     
-    } while (iterations++ < 10000);
+    } while (iterations++ < 5000);
 
     // console.table(moves);
 
@@ -207,7 +466,7 @@ const auto = () => {
 
     while (true) {
 
-        // console.time()
+        console.time()
 
         let slides = 0;
         initBoard();
@@ -280,7 +539,7 @@ const auto = () => {
             console.log(lost);
             console.table(board);
         }
-        // console.timeEnd();
+        console.timeEnd();
 
 
     }
@@ -295,8 +554,8 @@ const updateBoard = (board) => {
 
     const board1d = board.flat();
 
-    document.querySelectorAll('.tile').forEach((tile, i) => {
-        tile.innerText = board1d[i] == 0 ? '' : board1d[i];
+    document.querySelectorAll('.cell').forEach((cell, i) => {
+        cell.innerText = board1d[i] == 0 ? '' : board1d[i];
     });
 }
 
@@ -324,7 +583,174 @@ const addNumber = (board) => {
 
     let [i, j] = freeCells[Math.floor(Math.random() * freeCells.length)];
 
-    board[i][j] = Math.random() <= 0.1 ? 4 : 2;
+    let num = Math.random() <= 0.1 ? 4 : 2;
+
+    board[i][j] = num;
+
+    return[i, j, num];
+}
+
+const newTile = (i, j, num) => {
+
+    const cell16 = document.querySelector('#c15');
+    const tile = document.createElement('div'); 
+    tile.classList.add('tile'); 
+    tile.id = `t${i * size + j}`;
+
+    // tile.id = `t${id++}`;            
+    cell16.after(tile);
+
+    tile.innerText = board[i][j];
+
+    const power = Math.log2(num);
+    const backgroundLightness = 100 - power * 9;
+    const textLightness = backgroundLightness <= 50 ? 90 : 10;
+
+    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+    return tile;
+}
+
+const initPlacement = () => {
+
+    const cells = document.querySelectorAll('.cell');
+    // const cell16 = document.querySelector('#c15');
+    // const tiles = document.querySelectorAll('.tile:not(.visible)');
+
+    let n = 0;
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+
+            if (board[i][j] != 0) {
+
+                // console.log(cell16);
+
+                // const tile = document.createElement('div'); 
+                // tile.classList.add('tile');  
+                // tile.id = `t${id++}`;            
+                // cell16.after(tile);
+
+                const tile = newTile(i, j, board[i][j]);
+
+                const cell = cells[i * size + j];
+                // const tile = tiles[n++];
+                const offsetTop = cell.offsetTop;
+                const offsetLeft = cell.offsetLeft;
+
+                tile.style.top = `${offsetTop}px`;
+                tile.style.left = `${offsetLeft}px`;
+
+                // tile.id = `t${id++}`;
+                // tile.style.transform = "scale(0)";
+
+                // setTimeout(() => {
+                //     tile.style.opacity = 1;
+                //     tile.style.transform = "scale(100%)";
+                // }, 100);
+
+                // tile.innerText = board[i][j];
+                // const power = Math.log2(board[i][j]);
+                // const backgroundLightness = 100 - power * 9;
+                // const textLightness = backgroundLightness <= 50 ? 90 : 10;
+
+                // tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+                // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+
+                tile.style.display = "flex";
+
+                tile.classList.add('appear');
+
+                // tile.style.animation = 'appear 0.1s ease 0.1s forwards';
+
+                tile.addEventListener('animationend', e => {
+
+                    let tile = e.currentTarget;
+                    
+                    tile.style.opacity = 1;
+                    tile.classList.remove('appear');
+                }, {once: true});
+
+            }
+        }
+    }
+}
+
+const placeNumber = (i , j, num) => {
+
+    const cell = document.querySelectorAll('.cell')[i * size + j];
+    // const tile = document.querySelector('.tile:not(.visible)');
+    // const cell16 = document.querySelector('#c15');
+
+    // const tile = document.createElement('div'); 
+    // tile.classList.add('tile');  
+    // tile.id = `t${id++}`;            
+    // cell16.after(tile);
+
+    const tile = newTile(i, j, num);
+
+    const offsetTop = cell.offsetTop;
+    const offsetLeft = cell.offsetLeft;
+
+    tile.style.top = `${offsetTop}px`;
+    tile.style.left = `${offsetLeft}px`;
+    // tile.innerText = num;
+    // tile.id = `t${i * size + j}`;
+
+    // const power = Math.log2(board[i][j]);
+    // const backgroundLightness = 100 - power * 9;
+    // const textLightness = backgroundLightness <= 50 ? 90 : 10;
+
+    // tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+    // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+    // tile.style.backgroundColor = `blue`;
+
+
+    // tile.style.setProperty("--background-lightness", `${backgroundLightness}%`);
+    // tile.style.setProperty("--text-lightness", `${backgroundLightness <= 50 ? 90 : 10}%`);
+
+    tile.style.display = "flex";
+
+    // tile.classList.add('appear');
+
+    tile.classList.add('appear');
+
+    // tile.style.animation = 'appear 0.1s ease 0.1s forwards';
+
+
+    tile.addEventListener('animationend', e => {
+
+        tile.style.opacity = 1;
+        tile.classList.remove('appear');
+
+        enableKeys();
+        enableTouch();
+    }, {once: true});
+}
+
+const disapear = () => {
+
+    const tiles = document.querySelectorAll('.tile');
+
+    tiles.forEach(tile => {
+        tile.classList.remove('appear');
+    });
+}
+
+const numTiles = () => {
+
+    let tiles = 0;
+
+    for (let i = 0; i < size; i++) {
+       for (let j = 0; j < size; j++) {
+         if (board[i][j] != 0) tiles++;
+       }
+     }
+
+   return tiles;
 }
 
 const scores = (board) => {
@@ -346,46 +772,99 @@ const scores = (board) => {
 
 }
 
-const compress = vector => vector.filter(Boolean);
+const compress = row => {
 
-const combine = (vector) => {
+    let compressedRow = []
+    
+    for (let i = 0; i < row.length; i++) {
+
+        let num = typeof row[i] == 'number' ? row[i] : row[i].value;
+
+        if (num) compressedRow.push(row[i]);
+
+        // if (isNaN(row[i])) {
+        //     if (row[i].value != 0) compressedRow.push(row[i]);
+        // } else {
+            // if (row[i] != 0) compressedRow.push(row[i]);
+        // }
+    }
+
+    // return row.filter(Boolean);
+
+
+    return compressedRow;
+
+}
+
+const combine = row => {
 
     let score = 0;
 
-    for (let i = 0; i < vector.length - 1; i++) {
-        if (vector[i] == vector[i + 1]) {
-            vector[i] *= 2;
-            // if (vector[i] == 2048) win();
-            vector[i + 1] = 0;
-            score += vector[i];
+    for (let i = 0; i < row.length - 1; i++) {
+        
+        if (typeof row[i] == 'number') {
+            if (row[i] == row[i + 1]) {
+                row[i] *= 2;
+                row[i + 1] = 0;
+                score += row[i];
+            }
+        } else {
+            if (row[i].value == row[i + 1].value) {
+                row[i].value *= 2;
+                row[i].x1 = row[i + 1].x;
+                row[i].y1 = row[i + 1].y;
+                row[i + 1].value = 0;
+                score += row[i].value;
+            }
         }
     }
 
-    return [vector, score];
+    return [row, score];
 }
 
-const slide = (vector) => {
+// const compress = row => {
+
+//     let compressedRow = []
+    
+//     for (let i = 0; i < row.length; i++) {
+//         if (row[i] != 0) compressedRow.push(row[i]);
+//     }
+
+//     return compressedRow;
+
+
+//     // row.filter(Boolean);
+// }
+
+// const combine = row => {
+
+//     let score = 0;
+
+//     for (let i = 0; i < row.length - 1; i++) {
+//         if (row[i] == row[i + 1]) {
+//             row[i] *= 2;
+//             // if (vector[i] == 2048) win();
+//             row[i + 1] = 0;
+//             score += row[i];
+//         }
+//     }
+
+//     return [row, score];
+// }
+
+const slide = row => {
 
     let score;
     
-    vector = compress(vector);
+    row = compress(row);
 
-    // if (array.length > 0) {
-    //   for (let i = 0; i < array.length - 1; i++) {
-    //     if (array[i] == array[i + 1]) {
-    //       array[i] *= 2;
-    //       array[i + 1] = 0;
-    //     }
-    //   }  
-    // } 
+    [row, score] = combine(row);
 
-    [vector, score] = combine(vector);
+    row = compress(row);
 
-    vector = compress(vector);
+    while (row.length < size) row.push(0);
 
-    while (vector.length < size) vector.push(0);
-
-    return [vector, score];
+    return [row, score];
 }
 
 const flip = (board) => {
@@ -396,8 +875,12 @@ const flip = (board) => {
     // }
 
     for (let i = 0; i < size; i++) {
+        // console.log(board);
+        // console.log(board[i]);
         board[i].reverse();
     }
+
+    // board.map(row => row.reverse());
 
 
 }
@@ -408,6 +891,8 @@ const transpose = (board) => {
             [board[i][j], board[j][i]] = [board[j][i], board[i][j]];
         }
     }
+
+
 }
 
 const slideLeft = (board) => {
@@ -500,9 +985,9 @@ const disableTapZoom = () => {
 
 const enableKeys = () => document.addEventListener('keydown', e => {
 
-    const code = e.key
+    const key = e.key;
 
-    switch (code) {
+    switch (key) {
         case 'ArrowUp': 
             move('up'); 
             break;
@@ -514,8 +999,12 @@ const enableKeys = () => document.addEventListener('keydown', e => {
             break;
         case 'ArrowLeft': 
             move('left');
+            break;
+        default: 
+            enableKeys();
+
     }
-});
+}, {once: true});
 
 const enableTouch = () => {
 
@@ -539,7 +1028,7 @@ const enableTouch = () => {
 
             move(direction);
         }    
-    });
+    }, {once: true});
 }
 
 const init = () => {
@@ -547,8 +1036,14 @@ const init = () => {
     initBoard();
     disableTapZoom();
     setBoardSize();
-    updateBoard(board);
+    // updateBoard(board);
     showBoard();
+
+    setTimeout(initPlacement, 800);
+
+    // // setTimeout(disapear, 2800);
+
+
     enableKeys();
     enableTouch();
 

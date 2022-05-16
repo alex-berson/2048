@@ -17,7 +17,7 @@
 body {
     font-family: 'Roboto', serif;
     margin: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 1s ease;
     opacity: 0;
 }
 
@@ -45,7 +45,7 @@ h1 {
     font-size: 22vw;
     margin-top: 0;
     opacity: 1;
-    transition: opacity 1s ease-in-out;
+    /* transition: opacity 1s ease-in-out; */
 }
 
 .board {
@@ -55,6 +55,9 @@ h1 {
 
     padding: 4px;
     border: 10px solid darkgrey;
+    border-radius: 7px;
+
+    position: relative;
 
     background-color: lavender;
     height: var(--board-size);
@@ -63,7 +66,7 @@ h1 {
 
 }
 
-.tile {
+.cell {
     font-weight: bold;
     position: relative;
     display: flex;
@@ -72,6 +75,7 @@ h1 {
     letter-spacing: -2px;
     text-indent: -2px;
 
+    border-radius: 7px;
 
   
     height: calc((var(--board-size) - 32px)/ var(--size));
@@ -83,13 +87,83 @@ h1 {
     background-color: lightgrey;
 }
 
+.tile {
+
+    /* background-color: hsl(200, 50%, var(--background-lightness)); */
+    /* color: hsl(200, 25%, var(--text-lightness)); */
+
+    font-weight: bold;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -2px;
+    text-indent: -2px;
+
+    border-radius: 7px;
+
+  
+    height: calc((var(--board-size) - 32px)/ var(--size));
+    width: calc((var(--board-size) - 32px) / var(--size));
+
+    /* margin: 4px; */
+    font-size: 9vmin;
+    text-align: center;
+    background-color: red;
+
+    opacity: 0;
+
+    display: none;
+
+    transition: 0.1s ease-in-out;
+    /* transition: opacity 0.1s ease-in-out; */
+
+
+
+}
+
+@keyframes appear {
+    0% {
+      opacity: 0;
+      transform: scale(0); 
+    }
+  
+    100% {
+      opacity: 1;
+      transform: scale(1); 
+    } 
+}
+
+.appear {
+    animation: appear 0.1s ease 0.1s forwards;
+}
+
+@keyframes pop {
+    0% {
+      transform: scale(1); 
+    }
+  
+    50% {
+      transform: scale(1.1); 
+    } 
+
+    100% {
+        transform: scale(1); 
+      } 
+}
+
+.pop {
+    animation: pop 0.2s ease forwards;
+}
+
+
+
 #designed {
     text-align: center;
     align-self: auto;
     color: white;
     font-size: 0.60em; 
     margin-top: -1.35em;
-
 }
 
 .tile:hover {
@@ -122,25 +196,47 @@ h1 {
     .board {
         padding: 4px;
         border: 15px solid darkgray;
-        
+        border-radius: 10px;
+
 
         width: var(--board-size-big);
         height: var(--board-size-big);
 
     }
 
-    .tile {
+    .cell {
 
         font-size: 6vmin;
         text-align: center;
         margin: 4px;
         height: 92px;
         width: 92px;
+
+        border-radius: 10px;
+    }
+
+    .tile {
+
+        /* top: 104px; */
+        /* left: 204px; */
+
+        font-size: 6vmin;
+        text-align: center;
+        /* margin: 4px; */
+        height: 92px;
+        width: 92px;
+
+        border-radius: 10px;
     }
 
     #designed {
         font-size: 0.8em; 
         margin-top: -1.3em;
+
+        position: absolute;
+        left: 0; 
+        right: 0; 
+        margin-top: calc(var(--board-size-big) + 0.5em);
     }
 }
 
