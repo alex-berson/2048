@@ -94,9 +94,11 @@ h1 {
 
     font-weight: bold;
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* display: grid; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    place-items: center;
+    /* margin: auto; */
     letter-spacing: -2px;
     text-indent: -2px;
 
@@ -107,13 +109,17 @@ h1 {
     width: calc((var(--board-size) - 32px) / var(--size));
 
     /* margin: 4px; */
-    font-size: 9vmin;
+    font-size: 8.5vmin;
     text-align: center;
     background-color: red;
 
     opacity: 0;
 
     display: none;
+
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    /* filter: blur(.0px); */
 
     transition: 0.1s ease-in-out;
     /* transition: opacity 0.1s ease-in-out; */
@@ -135,7 +141,21 @@ h1 {
 }
 
 .appear {
-    animation: appear 0.1s ease 0.1s forwards;
+    animation: appear 0.2s ease 0.1s forwards;
+}
+
+@keyframes zoom {
+    0% {
+      transform: scale(1); 
+    }
+  
+    100% {
+      transform: scale(4.35); 
+    } 
+}
+
+.zoom {
+    animation: zoom 0.5s ease-in-out 1ms forwards;
 }
 
 @keyframes pop {
@@ -162,8 +182,13 @@ h1 {
     text-align: center;
     align-self: auto;
     color: white;
-    font-size: 0.60em; 
-    margin-top: -1.35em;
+    font-size: 0.55em; 
+    /* margin-top: -1.3em; */
+
+    position: absolute;
+    left: 0; 
+    right: 0; 
+    margin-top: calc(var(--board-size) + 0.7em);
 }
 
 .tile:hover {
@@ -184,7 +209,9 @@ h1 {
 @media (min-width: 460px) and (min-height: 460px) {
 
     :root {
-        --board-size-big: 400px;
+        /* --board-size-big: 400px; */
+        --board-size: 400px;
+
     }
 
     h1 {
@@ -199,8 +226,8 @@ h1 {
         border-radius: 10px;
 
 
-        width: var(--board-size-big);
-        height: var(--board-size-big);
+        width: var(--board-size);
+        height: var(--board-size);
 
     }
 
@@ -220,7 +247,7 @@ h1 {
         /* top: 104px; */
         /* left: 204px; */
 
-        font-size: 6vmin;
+        font-size: 40px;
         text-align: center;
         /* margin: 4px; */
         height: 92px;
@@ -236,7 +263,17 @@ h1 {
         position: absolute;
         left: 0; 
         right: 0; 
-        margin-top: calc(var(--board-size-big) + 0.5em);
+        margin-top: calc(var(--board-size) + 0.5em);
+    }
+
+    @keyframes zoom {
+        0% {
+          transform: scale(1); 
+        }
+      
+        100% {
+          transform: scale(4.27); 
+        } 
     }
 }
 

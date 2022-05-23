@@ -1,14 +1,17 @@
-const size = 4;
 let board = [];
+const size = 4;
 let score = 0;
-let touchstartX, touchstartY;
-let id = 0;
+let startX, startY;
+let swiped = false;
+// let id = 0;
 
 const showBoard = () => document.querySelector('body').style.opacity = 1;
 
 const setBoardSize = () => {
 
     let boardSize;
+
+    if (screen.height > 460 && screen.width > 460) return;
 
     if (screen.height > screen.width) {
         boardSize = Math.ceil(screen.width * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-size')) / size) * size;
@@ -51,7 +54,6 @@ const initBoard = () => {
     //  [8, 64, 4, 0]
     // ];
 
-    // console.log(isNaN(board[0][0]));
 
     addNumber(board);
     addNumber(board);    
@@ -105,7 +107,7 @@ const slideTiles = (boardxy) => {
 
                 const cell = cells[i * size + j];
 
-                const cell2 = cells[boardxy[i][j].x * size + boardxy[i][j].y];
+                // const cell2 = cells[boardxy[i][j].x * size + boardxy[i][j].y];
 
                 // console.log(cell2);
 
@@ -131,15 +133,15 @@ const slideTiles = (boardxy) => {
                 tile.i = i;
                 tile.j = j;
 
-                if (boardxy[i][j].x1 == undefined) {
+                // if (boardxy[i][j].x1 == undefined) {
                     tile.addEventListener('transitionend', e => {
                         e.currentTarget.id = `t${tile.i * size + tile.j}`;
                     }, {once: true}); 
-                } else {
-                    tile.addEventListener('transitionend', e => {
-                        e.currentTarget.remove();
-                    }, {once: true}); 
-                }
+                // } else {
+                //     tile.addEventListener('transitionend', e => {
+                //         e.currentTarget.remove();
+                //     }, {once: true}); 
+                // }
 
                 
 
@@ -152,7 +154,7 @@ const slideTiles = (boardxy) => {
 
                 const cell = cells[i * size + j];
 
-                const cell3 = cells[boardxy[i][j].x1 * size + boardxy[i][j].y1];
+                // const cell3 = cells[boardxy[i][j].x1 * size + boardxy[i][j].y1];
 
                 // const rect = cell3.getBoundingClientRect();
                 // const x = rect.left + rect.width / 2;
@@ -163,8 +165,6 @@ const slideTiles = (boardxy) => {
                 // tile = document.querySelector(`#${el.id}`);
 
                 const tile1 = document.querySelector(`#t${boardxy[i][j].x * size + boardxy[i][j].y}`);
-
-
                 const tile = document.querySelector(`#t${boardxy[i][j].x1 * size + boardxy[i][j].y1}`);
 
 
@@ -242,7 +242,7 @@ const slideTiles = (boardxy) => {
 
                     // el.style.display = "none";
 
-                    tile.classList.add('pop');
+                    if (!won(board)) tile.classList.add('pop');
 
                     // tile.style.animation = `pop 0.2s ease 0.1s forwards`;
 
@@ -278,16 +278,78 @@ const slideTiles = (boardxy) => {
     }
 }
 
-const checkBoard = () => {
+// const checkBoard = () => {
+//     for (let i = 0; i < size; i++) {
+//         for (let j = 0; j < size; j++) {
+//             if (board[i][j] != 0) {
+//                 if (document.querySelector(`#t${i * size + j}`).innerText != board[i][j]) return true;
+//             }
+//         }
+//     }
+//     return false;
+// }
+
+const showBig = () => {
+
+    let x, y;
+
+    let boardSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-size'));
+
+    let offsetCenter = {
+        0: boardSize / 8 * 3,
+        1: boardSize / 8,
+        2: -boardSize / 8,
+        3: -boardSize / 8 * 3
+    }
+
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
-            if (board[i][j] != 0) {
-                if (document.querySelector(`#t${i * size + j}`).innerText != board[i][j]) return true;
+            if (board[i][j] == 2048) {
+                [x, y] = [i, j];
+                break;
             }
         }
     }
-    return false;
-}
+
+    const tile = document.querySelector(`#t${x * size + y}`);
+
+    const offsetTop = tile.offsetTop;
+    const offsetLeft = tile.offsetLeft;
+
+    tile.style.zIndex = 100;
+
+    tile.style.transition = '0.5s ease-in-out';
+
+    // tile.style.transform = 'scale(4.27)';
+
+    tile.classList.add('zoom');
+
+    tile.style.borderRadius = '2.3px';
+
+    // console.log(getComputedStyle(document.documentElement).getPropertyValue('--board-size'));
+
+    // console.log(boardSize / 4);
+
+    tile.style.left = `${offsetLeft + offsetCenter[y]}px`;
+    tile.style.top = `${offsetTop + offsetCenter[x]}px`;
+
+    // console.log(offsetCenter[x], offsetCenter[y]);
+
+    tile.addEventListener('animationend', e => {
+
+        let tile2048 = e.currentTarget;
+
+        // console.log(tile2048);
+
+        document.querySelectorAll('.tile').forEach(tile => {
+
+            // console.log(tile);
+
+            if (tile != tile2048) tile.remove();
+
+        });
+    }, {once: true});
+} 
 
 
 const move = (direction) => {
@@ -339,7 +401,11 @@ const move = (direction) => {
     console.log(boardxy.map(arr => arr.slice()));
 
     if (won(board))  {
-        setTimeout(() => console.log("Game Over"), 200);
+        slideTiles(boardxy);
+        setTimeout(() => {
+            showBig();
+            console.log("Game Over");
+        }, 200);
         return;
     }
 
@@ -361,6 +427,93 @@ const move = (direction) => {
     }
 
     if (terminal(board))  setTimeout(() => console.log("Game Over"), 200);
+}
+
+const auto = () => {
+
+    let iterations = 0
+    let lost = 0;
+
+    while (true) {
+
+        console.time()
+
+        let slides = 0;
+        initBoard();
+        iterations++;
+
+        do {
+
+            let direction = mcs(board);
+
+            // if (direction == undefined) {
+                
+            //     console.log(i, scores(board));
+
+            //     console.table(board);
+            //     return;
+            // }
+
+            // console.log(direction);
+            let oldBoard = board.map(arr => arr.slice());
+
+            switch (direction) {
+                case 0: 
+                    slideUp(board); 
+                    break;
+                case 1: 
+                    slideRight(board); 
+                    break;
+                case 2: 
+                    slideDown(board); 
+                    break;
+                case 3: 
+                    slideLeft(board);
+            }
+
+            if (changed(oldBoard, board)) {
+
+                if (won(board))  {
+                    // console.log("Game Over", i);
+                    // updateBoard(board);    
+                    break;
+                }
+
+                addNumber(board);
+
+                // updateBoard(board);
+
+                // if (terminal(board))  {
+
+                //     // j++;
+                    
+                //     console.log("Game Over", i, scores(board));
+                //     // initBoard();  
+                //     // i = 0;  
+                //     // continue;
+                //     updateBoard();    
+        
+                //     return;
+                // }
+            }
+
+            slides++;
+
+        } while (!terminal(board));
+
+
+        console.log(iterations, slides, scores(board));
+
+        if (scores(board) < 10000) {
+            lost++;
+            console.log(lost);
+            console.table(board);
+        }
+        console.timeEnd();
+
+    }
+
+    // updateBoard(board);
 }
 
 const mcs = (board) => {
@@ -459,95 +612,6 @@ const mcs = (board) => {
     return bestMove;
 }
 
-const auto = () => {
-
-    let iterations = 0
-    let lost = 0;
-
-    while (true) {
-
-        console.time()
-
-        let slides = 0;
-        initBoard();
-        iterations++;
-
-        do {
-
-            let direction = mcs(board);
-
-            // if (direction == undefined) {
-                
-            //     console.log(i, scores(board));
-
-            //     console.table(board);
-            //     return;
-            // }
-
-            // console.log(direction);
-            let oldBoard = board.map(arr => arr.slice());
-
-            switch (direction) {
-                case 0: 
-                    slideUp(board); 
-                    break;
-                case 1: 
-                    slideRight(board); 
-                    break;
-                case 2: 
-                    slideDown(board); 
-                    break;
-                case 3: 
-                    slideLeft(board);
-            }
-
-            if (changed(oldBoard, board)) {
-
-                if (won(board))  {
-                    // console.log("Game Over", i);
-                    // updateBoard(board);    
-                    break;
-                }
-
-                addNumber(board);
-
-                // updateBoard(board);
-
-                // if (terminal(board))  {
-
-                //     // j++;
-                    
-                //     console.log("Game Over", i, scores(board));
-                //     // initBoard();  
-                //     // i = 0;  
-                //     // continue;
-                //     updateBoard();    
-        
-                //     return;
-                // }
-            }
-
-            slides++;
-
-        } while (!terminal(board));
-
-
-        console.log(iterations, slides, scores(board));
-
-        if (scores(board) < 10000) {
-            lost++;
-            console.log(lost);
-            console.table(board);
-        }
-        console.timeEnd();
-
-
-    }
-
-
-    // updateBoard(board);
-}
-
 const enableMoves = () => document.addEventListener('keydown', move);
 
 const updateBoard = (board) => {
@@ -585,6 +649,8 @@ const addNumber = (board) => {
 
     let num = Math.random() <= 0.1 ? 4 : 2;
 
+    // num = 512;
+
     board[i][j] = num;
 
     return[i, j, num];
@@ -619,6 +685,8 @@ const initPlacement = () => {
     // const tiles = document.querySelectorAll('.tile:not(.visible)');
 
     let n = 0;
+
+    // board[1][1] = 2048;
 
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
@@ -659,7 +727,7 @@ const initPlacement = () => {
                 // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
 
 
-                tile.style.display = "flex";
+                tile.style.display = "grid";
 
                 tile.classList.add('appear');
 
@@ -671,7 +739,32 @@ const initPlacement = () => {
                     
                     tile.style.opacity = 1;
                     tile.classList.remove('appear');
+
+                //     tile.classList.add('scale');
+
+                //     tile.style.borderRadius = '2.3px';
+
+
+                //     tile.style.transition = '0.5s ease-in-out 0.5s';
+
+                //     console.log(getComputedStyle(document.documentElement).getPropertyValue('--board-size'));
+
+                //     let boardSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-size'));
+
+                //     console.log(boardSize / 4);
+
+
+                //     boardSize = 400;
+
+
+
+                //     tile.style.top = `${offsetTop + boardSize / 8}px`;
+                //     tile.style.left = `${offsetLeft + boardSize / 8}px`;
+
+
                 }, {once: true});
+
+                // return;
 
             }
         }
@@ -712,7 +805,7 @@ const placeNumber = (i , j, num) => {
     // tile.style.setProperty("--background-lightness", `${backgroundLightness}%`);
     // tile.style.setProperty("--text-lightness", `${backgroundLightness <= 50 ? 90 : 10}%`);
 
-    tile.style.display = "flex";
+    tile.style.display = "grid";
 
     // tile.classList.add('appear');
 
@@ -978,6 +1071,30 @@ const terminal = (board) => {
     return true;
 }
 
+const swipe = (e) => {
+
+    currentX = e.touches[0].clientX;
+    currentY = e.touches[0].clientY;
+
+    // console.log(currentX, currentY);
+
+    const dx = currentX - startX;
+    const dy = currentY - startY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (!swiped && Math.max(absDx, absDy) > 10) {
+
+        let direction = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+
+        swiped = true;
+
+        document.querySelector('.board').removeEventListener('touchmove', swipe);
+
+        move(direction);
+    }    
+}
+
 const disableTapZoom = () => {
     const preventDefault = (e) => e.preventDefault();
     document.body.addEventListener('touchstart', preventDefault, {passive: false});
@@ -1009,26 +1126,46 @@ const enableKeys = () => document.addEventListener('keydown', e => {
 const enableTouch = () => {
 
     document.querySelector('.board').addEventListener('touchstart', e => {
-        touchstartX = e.changedTouches[0].screenX;
-        touchstartY = e.changedTouches[0].screenY;
-    });
+        // touchstartX = e.changedTouches[0].screenX;
+        // touchstartY = e.changedTouches[0].screenY;
+
+        swiped = false;
+
+
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+
+        console.log(touchstartX, touchstartY);
+
+    }, {once: true});
 
     document.querySelector('.board').addEventListener('touchend', e => {
 
-        const touchendX = e.changedTouches[0].screenX;
-        const touchendY = e.changedTouches[0].screenY;
-        const dx = touchendX - touchstartX;
-        const dy = touchendY - touchstartY;
-        const absDx = Math.abs(dx);
-        const absDy = Math.abs(dy);
+        if (!swiped) enableTouch();
+
+
+        swiped = false;
+
+    //     const touchendX = e.touches[0].clientX;
+    //     const touchendY = e.touches[0].clientY;
+    //     const dx = touchendX - touchstartX;
+    //     const dy = touchendY - touchstartY;
+    //     const absDx = Math.abs(dx);
+    //     const absDy = Math.abs(dy);
     
-        if (Math.max(absDx, absDy) > 10) {
+    //     if (Math.max(absDx, absDy) > 10) {
 
-            let direction = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    //         let direction = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
 
-            move(direction);
-        }    
+    //         move(direction);
+
+    //         return;
+    //     }    
+
     }, {once: true});
+
+    document.querySelector('.board').addEventListener('touchmove', swipe);
+
 }
 
 const init = () => {
@@ -1039,13 +1176,18 @@ const init = () => {
     // updateBoard(board);
     showBoard();
 
-    setTimeout(initPlacement, 800);
+    setTimeout(() => {
+        initPlacement();
+    }, 500);
+
+    setTimeout(() => {
+        enableKeys();
+        enableTouch();
+    }, 700);
+
 
     // // setTimeout(disapear, 2800);
 
-
-    enableKeys();
-    enableTouch();
 
     // setTimeout(() => {
         // auto(board);
