@@ -12,6 +12,18 @@
 :root {
     --size: 4;
     --board-size: 0.85;
+
+    --color2: #a064ca;
+    --color4: #5050c4;
+    --color8: #6ca4c9;
+    --color16: #7fcdac;
+    --color32: #74c860;
+    --color64: #93cb67;
+    --color128: #b3cf6f;
+    --color256: #cbc963;
+    --color512: #c7a664;
+    --color1024: #c58766;
+    --color2048: #bc5854;
 }
 
 body {
@@ -117,15 +129,46 @@ h1 {
 
     display: none;
 
-    backface-visibility: hidden;
-    transform: translateZ(0);
+    /* backface-visibility: hidden; */
+    /* transform: translateZ(0); */
     /* filter: blur(.0px); */
 
     transition: 0.1s ease-in-out;
     /* transition: opacity 0.1s ease-in-out; */
 
 
+}
 
+.tile2048 {
+
+
+    font-weight: bold;
+    position: absolute;
+    place-items: center;
+
+    border-radius: 28px;
+
+    height: calc((var(--board-size) - 32px)/ var(--size) * 4.35);
+    width: calc((var(--board-size) - 32px) / var(--size) * 4.35);
+
+    letter-spacing: -8px;
+    /* text-indent: -8px; */
+
+    font-size: 37vmin;
+    text-align: center;
+    background-color: red;
+
+    transform: scale(0.23);
+
+    display: grid;
+
+    transform-origin: top left;
+
+    z-index: 100;
+
+    opacity: 0;
+
+    transition: 0.1s ease-in-out;
 }
 
 @keyframes appear {
@@ -155,7 +198,22 @@ h1 {
 }
 
 .zoom {
-    animation: zoom 0.5s ease-in-out 1ms forwards;
+    animation: zoom 0.5s ease-in-out 100ms forwards;
+}
+
+@keyframes zoom2 {
+
+    0% {
+        transform: scale(0.23);
+    }
+  
+    100% {
+        transform: scale(1); 
+    } 
+}
+
+.zoom2 {
+    animation: zoom2 0.5s ease-in-out 40ms forwards;
 }
 
 @keyframes pop {
@@ -191,7 +249,7 @@ h1 {
     margin-top: calc(var(--board-size) + 0.7em);
 }
 
-.tile:hover {
+.tile:hover, .tile2048:hover  {
       cursor: pointer;
 }
 
@@ -256,6 +314,34 @@ h1 {
         border-radius: 10px;
     }
 
+    .tile2048 {
+
+    
+        border-radius: 40px;
+    
+        height: calc((var(--board-size) - 32px)/ var(--size) * 4.27);
+        width: calc((var(--board-size) - 32px) / var(--size) * 4.27);
+
+        letter-spacing: -8px;
+        text-indent: -0px;    
+    
+        font-size: 173px;
+        text-align: center;
+        background-color: red;
+    
+        /* transform: scale(0.23); */
+    
+        display: grid;
+
+        transform-origin: top left;
+
+        z-index: 100;
+
+        opacity: 0;
+
+        transition: 0.1s ease-in-out;
+    }
+
     #designed {
         font-size: 0.8em; 
         margin-top: -1.3em;
@@ -273,6 +359,21 @@ h1 {
       
         100% {
           transform: scale(4.27); 
+        } 
+    }
+
+    .zoom {
+        animation: zoom 0.5s ease-in-out forwards;
+    }
+
+    @keyframes zoom2 {
+
+        0% {
+            transform: scale(0.235);
+        }
+      
+        100% {
+            transform: scale(1); 
         } 
     }
 }

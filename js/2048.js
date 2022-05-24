@@ -289,6 +289,134 @@ const slideTiles = (boardxy) => {
 //     return false;
 // }
 
+
+const restart = (e) => {
+
+    const tile = e.currentTarget;
+    tile.style.opacity = 0;
+
+    tile.addEventListener('transitionend', e => {
+
+        const tile = e.currentTarget;       
+        // console.log("transitionend");
+        tile.remove();
+
+        initBoard();
+        initPlacement();
+
+        setTimeout(() => {
+            enableKeys();
+            enableTouch();
+        }, 200);
+
+
+    });
+
+}
+
+const newTile2 = (i, j, num) => {
+
+    const cell16 = document.querySelector('#c15');
+    const tile = document.createElement('div'); 
+    tile.classList.add('tile2048'); 
+    tile.id = `t${i * size + j}`;
+
+    // tile.id = `t${id++}`;            
+    cell16.after(tile);
+
+    tile.innerText = 2048;
+
+    const power = Math.log2(num);
+    const backgroundLightness = 100 - power * 9;
+    const textLightness = backgroundLightness <= 50 ? 90 : 10;
+
+    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+    return tile;
+}
+
+const showBig2 = () => {
+
+    let x, y;
+
+    let boardSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-size'));
+
+    let offset = {
+        0: 0,
+        1: -boardSize / 8 * 2,
+        2: -boardSize / 8 * 4,
+        3: -boardSize / 8 * 6
+    }
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (board[i][j] == 2048) {
+                [y, x] = [i, j];
+                break;
+            }
+        }
+    }
+
+
+    const cell = document.querySelectorAll('.cell')[y * size + x];
+    // const tile = document.querySelector('.tile:not(.visible)');
+    // const cell16 = document.querySelector('#c15');
+
+    // const tile = document.createElement('div'); 
+    // tile.classList.add('tile');  
+    // tile.id = `t${id++}`;            
+    // cell16.after(tile);
+
+    const tile = newTile2(y, x, 2048);
+
+    const offsetTop = cell.offsetTop;
+    const offsetLeft = cell.offsetLeft;
+
+
+    tile.style.top = `${offsetTop}px`;
+    tile.style.left = `${offsetLeft}px`;
+
+
+    tile.style.transition = '0.5s ease-in-out 40ms, opacity 0s ease-in-out';
+
+
+    setTimeout(() => {
+
+        tile.style.left = `${offsetLeft + offset[x]}px`;
+        tile.style.top = `${offsetTop + offset[y]}px`;
+
+        tile.classList.add('zoom2');
+
+        tile.style.borderRadius = '10px';
+        
+    }, 40);
+
+    setTimeout(() => {
+
+        tile.style.opacity = 1;
+        
+    }, 90);
+
+    tile.addEventListener('animationend', e => {
+
+        console.log("ANIMATION");
+
+        let tile2048 = e.currentTarget;
+
+        document.querySelectorAll('.tile').forEach(tile => {
+            tile.remove();
+        });
+
+        tile2048.style.transition = "opacity 1s";
+
+        tile2048.addEventListener('touchstart', restart);
+
+        tile2048.addEventListener('mousedown', restart);
+
+    }, {once: true});
+}
+
 const showBig = () => {
 
     let x, y;
@@ -318,7 +446,7 @@ const showBig = () => {
 
     tile.style.zIndex = 100;
 
-    tile.style.transition = '0.5s ease-in-out';
+    tile.style.transition = '0.5s ease-in-out 100ms';
 
     // tile.style.transform = 'scale(4.27)';
 
@@ -346,6 +474,13 @@ const showBig = () => {
             // console.log(tile);
 
             if (tile != tile2048) tile.remove();
+
+            tile.style.transition = "opacity 1s";
+
+            tile.addEventListener('touchstart', restart);
+
+            tile.addEventListener('mousedown', restart);
+
 
         });
     }, {once: true});
@@ -403,7 +538,7 @@ const move = (direction) => {
     if (won(board))  {
         slideTiles(boardxy);
         setTimeout(() => {
-            showBig();
+            showBig2();
             console.log("Game Over");
         }, 200);
         return;
