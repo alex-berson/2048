@@ -204,8 +204,14 @@ const slideTiles = (boardxy) => {
                     const backgroundLightness = 100 - power * 9;
                     const textLightness = backgroundLightness <= 50 ? 90 : 10;
                 
-                    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
-                    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+                    // tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+
+                    tile.style.backgroundColor = `var(--color${parseInt(tile.innerText)})`;
+
+                    // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+                    tile.style.color = 'white';
+
 
                     tile.id = `t${tile.i * size + tile.j}`;
 
@@ -807,8 +813,14 @@ const newTile = (i, j, num) => {
     const backgroundLightness = 100 - power * 9;
     const textLightness = backgroundLightness <= 50 ? 90 : 10;
 
-    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
-    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+    // tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+
+    tile.style.backgroundColor = `var(--color${parseInt(tile.innerText)})`;
+
+    // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+    tile.style.color = 'white';
+
 
     return tile;
 }
@@ -1218,7 +1230,7 @@ const swipe = (e) => {
     const absDx = Math.abs(dx);
     const absDy = Math.abs(dy);
 
-    if (!swiped && Math.max(absDx, absDy) > 10) {
+    if (!swiped && Math.max(absDx, absDy) > 20) {
 
         let direction = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
 
@@ -1303,7 +1315,25 @@ const enableTouch = () => {
 
 }
 
+const colors = () => {
+
+    let cells = document.querySelectorAll('.cell');
+
+    for (let i = 0; i < 12; i++) {
+
+        let n = Math.pow(2, i + 1);
+
+        cells[i].style.backgroundColor = `var(--color${n})`;
+
+        cells[i].innerText = n;
+
+        cells[i].style.color = 'white';
+    }
+}
+
 const init = () => {
+
+    // colors();
 
     initBoard();
     disableTapZoom();

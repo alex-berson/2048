@@ -13,17 +13,51 @@
     --size: 4;
     --board-size: 0.85;
 
-    --color2: #a064ca;
-    --color4: #5050c4;
-    --color8: #6ca4c9;
-    --color16: #7fcdac;
-    --color32: #74c860;
-    --color64: #93cb67;
+    --color2: #bf5fa3;
+    --color4: #a064ca;
+    --color8: #5050c4;
+    --color16: #6ca4c9;
+    --color32: #7fcdac;
+    --color64: #74c860;
+    /* --color128: #93cb67; */
     --color128: #b3cf6f;
     --color256: #cbc963;
     --color512: #c7a664;
     --color1024: #c58766;
     --color2048: #bc5854;
+    /* --color4096: #ad3729; */
+
+
+
+
+    /* --color1024: #a064ca;
+    --color256: #5050c4;
+    --color128: #6ca4c9;
+    --color8: #7fcdac;
+    --color4: #74c860;
+    --color2: #b3cf6f;
+    --color16: #cbc963;
+    --color32: #c7a664;
+    --color64: #c58766;
+    --color2048: #bc5854;
+    --color512: #bf5fa3; */
+
+    
+
+    /* --color2: #b3cf6f;
+    --color32: #74c860;
+    --color16: #7fcdac;
+    --color4: #cbc963;
+    --color8: #c7a664;
+    --color1024: #c58766;
+    --color64: #6ca4c9;
+    --color128: #5050c4;
+    --color512: #bf5fa3;
+    --color256: #a064ca;
+    --color2048: #bc5854;
+    --color8192: #93cb67; */
+
+
 }
 
 body {
@@ -58,6 +92,9 @@ h1 {
     margin-top: 0;
     opacity: 1;
     /* transition: opacity 1s ease-in-out; */
+
+    letter-spacing: 3vw;
+    text-indent: 3vw;
 }
 
 .board {
@@ -276,6 +313,8 @@ h1 {
         font-size: 6.7em;
         /* letter-spacing: 22px; */
         /* text-indent: 22px; */
+        letter-spacing: 6px;
+        text-indent: 6px;
     }
 
     .board {
