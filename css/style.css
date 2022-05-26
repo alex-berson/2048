@@ -161,6 +161,7 @@ h1 {
     font-size: 8.5vmin;
     text-align: center;
     background-color: red;
+    color: white;
 
     opacity: 0;
 
@@ -170,7 +171,7 @@ h1 {
     /* transform: translateZ(0); */
     /* filter: blur(.0px); */
 
-    transition: 0.1s ease-in-out;
+    transition: 0.1s ease-in-out, background-color 0s ease;
     /* transition: opacity 0.1s ease-in-out; */
 
 
@@ -194,6 +195,7 @@ h1 {
     font-size: 37vmin;
     text-align: center;
     background-color: red;
+    color: white;
 
     transform: scale(0.23);
 

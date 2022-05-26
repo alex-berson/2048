@@ -3,9 +3,12 @@ const size = 4;
 let score = 0;
 let startX, startY;
 let swiped = false;
+const timeLimit = 200;
 // let id = 0;
 
 const showBoard = () => document.querySelector('body').style.opacity = 1;
+
+const timeOver = (startTime, timeLimit) => new Date() - startTime >= timeLimit;
 
 const setBoardSize = () => {
 
@@ -99,6 +102,8 @@ const unmarkBoard = (board, boardxy) => {
 const slideTiles = (boardxy) => {
 
     const cells = document.querySelectorAll('.cell');
+
+    document.querySelectorAll('.tile').forEach(tile => tile.classList.remove('pop'));
 
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
@@ -310,6 +315,12 @@ const restart = (e) => {
         initBoard();
         initPlacement();
 
+        if (ai()) {
+            console.time();
+            setTimeout(aiPlay, 300);
+            return;
+        }
+
         setTimeout(() => {
             enableKeys();
             enableTouch();
@@ -336,13 +347,18 @@ const newTile2 = (i, j, num) => {
     const backgroundLightness = 100 - power * 9;
     const textLightness = backgroundLightness <= 50 ? 90 : 10;
 
-    tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
-    tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+    // tile.style.backgroundColor = `hsl(0, 50%, ${backgroundLightness}%)`;
+    // tile.style.color = `hsl(0, 50%, ${textLightness}%)`;
+
+    tile.style.backgroundColor = `var(--color${parseInt(tile.innerText)})`;
+    tile.style.color = 'white';
 
     return tile;
 }
 
 const showBig2 = () => {
+
+    console.timeEnd();
 
     let x, y;
 
@@ -535,11 +551,9 @@ const move = (direction) => {
 
     unmarkBoard(board, boardxy);
 
-    console.log(board.map(arr => arr.slice()));
+    // console.log(board.map(arr => arr.slice()));
 
-
-
-    console.log(boardxy.map(arr => arr.slice()));
+    // console.log(boardxy.map(arr => arr.slice()));
 
     if (won(board))  {
         slideTiles(boardxy);
@@ -568,6 +582,65 @@ const move = (direction) => {
     }
 
     if (terminal(board))  setTimeout(() => console.log("Game Over"), 200);
+}
+
+const aiPlay = () => {
+
+    // console.log("AIPLAY");
+
+    // do {
+        let startTime = new Date();
+
+        let direction = mcs(board, startTime, timeLimit);
+
+        // console.log(direction);
+
+        let oldBoard = board.map(arr => arr.slice());
+
+        let boardxy = markBoard(board);
+
+        switch (direction) {
+            case 0: 
+                slideUp(boardxy); 
+                break;
+            case 1: 
+                slideRight(boardxy); 
+                break;
+            case 2: 
+                slideDown(boardxy); 
+                break;
+            case 3: 
+                slideLeft(boardxy);
+        }
+
+        // console.log(boardxy);
+
+        unmarkBoard(board, boardxy);
+
+        if (won(board))  {
+            slideTiles(boardxy);
+            setTimeout(() => {
+                showBig2();
+                console.log("Game Over");
+            }, 200);
+            return;
+        }
+
+        if (changed(oldBoard, board)) {
+            slideTiles(boardxy);
+    
+            let [i, j, num] = addNumber(board);
+    
+            placeNumber(i, j, num);
+        }
+
+
+        // console.log(board);
+
+    // } while (!terminal(board));
+
+    setTimeout(aiPlay, 250);
+
 }
 
 const auto = () => {
@@ -657,7 +730,9 @@ const auto = () => {
     // updateBoard(board);
 }
 
-const mcs = (board) => {
+const mcs = (board, startTime, timeLimit) => {
+
+    // timeLimit = 300;
 
     let iterations = 0;
 
@@ -722,16 +797,23 @@ const mcs = (board) => {
         } while (!terminal(newBoard));
 
     
-    // console.log("Game Over", i, scores(newBoard), first);
+        // console.log("Game Over", i, scores(newBoard), first);
 
-    // updateBoard(newBoard); 
+        // updateBoard(newBoard); 
 
-    moves[first][0]++;
-    // moves[first][1] += scores(newBoard);
-    moves[first][1] += score;
+        moves[first][0]++;
+        // moves[first][1] += scores(newBoard);
+        moves[first][1] += score;
 
-    
-    } while (iterations++ < 5000);
+        iterations++;
+        
+        // } while (iterations < 1000);
+
+    } while (!timeOver(startTime, timeLimit));
+
+    document.querySelector('h1').innerText = iterations;
+
+    console.log(iterations);
 
     // console.table(moves);
 
@@ -1331,6 +1413,16 @@ const colors = () => {
     }
 }
 
+const ai = () => {
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const ai = urlParams.get('ai');
+    
+    if (ai) return true;
+    return false;
+}
+
 const init = () => {
 
     // colors();
@@ -1338,24 +1430,27 @@ const init = () => {
     initBoard();
     disableTapZoom();
     setBoardSize();
-    // updateBoard(board);
     showBoard();
 
     setTimeout(() => {
         initPlacement();
-    }, 500);
+    }, 800);
+
+    if (ai()) {
+        console.time();
+        setTimeout(aiPlay, 1300);
+        return;
+    }
 
     setTimeout(() => {
         enableKeys();
         enableTouch();
-    }, 700);
+    }, 1000);
 
-
-    // // setTimeout(disapear, 2800);
 
 
     // setTimeout(() => {
-        // auto(board);
+    //     auto(board);
     // }, 2000); 
     
 }
