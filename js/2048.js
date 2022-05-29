@@ -1417,9 +1417,10 @@ const ai = () => {
 
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const ai = urlParams.get('ai');
+    const mode = urlParams.get('mode');
     
-    if (ai) return true;
+    if (mode == 'ai') return true;
+
     return false;
 }
 
@@ -1434,7 +1435,7 @@ const init = () => {
 
     setTimeout(() => {
         initPlacement();
-    }, 800);
+    }, 500);
 
     if (ai()) {
         console.time();
@@ -1445,7 +1446,7 @@ const init = () => {
     setTimeout(() => {
         enableKeys();
         enableTouch();
-    }, 1000);
+    }, 700);
 
 
 
