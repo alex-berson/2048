@@ -1,8 +1,5 @@
-// const timeOver = (startTime, timeLimit) => new Date() - startTime >= timeLimit;
-
 const mcs = (board, startTime, timeLimit) => {
 
-    let iterations = 0; //
     let directions = ['up','right','down','left'];
     let tries = {up:0, right:0, down:0, left:0};
     let scores = {up:0, right:0, down:0, left:0};
@@ -14,7 +11,7 @@ const mcs = (board, startTime, timeLimit) => {
         let newBoard = board.map(arr => arr.slice());
 
         do {
-            let direction = directions[Math.floor(Math.random() * size)];
+            let direction = directions[Math.trunc(Math.random() * size)];
             let oldBoard = newBoard.map(arr => arr.slice());
 
             switch (direction) {
@@ -43,8 +40,6 @@ const mcs = (board, startTime, timeLimit) => {
 
         tries[firstMove]++;
         scores[firstMove] += score;
-
-        iterations++; //
     
     } while (new Date() - startTime < timeLimit);
 

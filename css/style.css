@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'Roboto';
-    src: url(../fonts/Roboto-Regular-webfont.woff);
+    src: url(../fonts/roboto-regular-webfont.woff);
 }
 
 @font-face {
     font-family: 'Roboto';
-    src: url(../fonts/Roboto-Bold-webfont.woff);
+    src: url(../fonts/roboto-bold-webfont.woff);
     font-weight: bold;
 }
 
@@ -16,12 +16,12 @@
     --color2: #cd58a6;
     --color4: #aa60d0;
     --color8: #5050cb;
-    --color16: #59a6cd;
+    --color16: #58a6cd;
     --color32: #60d0aa;
     --color64: #52cb50;
     --color128: #acd060;
     --color256: #cbc950;
-    --color512: #cda459;
+    --color512: #cda458;
     --color1024: #d08460;
     --color2048: #cb5050;
 }
@@ -67,27 +67,18 @@ header {
 }
 
 .char {
-    /* display: grid; */
     display: inline-block;
-    /* line-height: 16.5vmin; */
-    /* line-height: 82%; */
-    /* place-items: center; */
+    box-sizing: border-box;
     text-align: center;
     align-items: center;
-
     line-height: calc((var(--board-size) - 32px) / var(--size) - 0.8rem);
-    /* line-height: 75%; */
-
-    box-sizing: border-box;
     height: calc((var(--board-size) - 32px) / var(--size));
     width: calc((var(--board-size) - 32px) / var(--size));
+    font-size: calc((var(--board-size) - 32px) / 3.8);
+    font-weight: bold;
     border-width: 5px;
     border-style: solid;
     border-radius: 10px;
-    /* font-size: 20vmin; */
-    font-size: calc((var(--board-size) - 32px) / 3.8);
-
-    font-weight: bold;
     color: white;
 }
 
@@ -159,12 +150,6 @@ header {
     position: absolute;
     place-items: center;
     border-radius: 28px;
-    /* height: calc((var(--board-size) - 32px) / var(--size) * 4.35); */
-    /* width: calc((var(--board-size) - 32px) / var(--size) * 4.35); */
-    /* height: calc((var(--board-size) - 32px) / var(--size) * 4.28); */
-    /* width: calc((var(--board-size) - 32px) / var(--size) * 4.28); */
-    /* height: calc((var(--board-size) - 32px) / var(--size) * 4.32); */
-    /* width: calc((var(--board-size) - 32px) / var(--size) * 4.32); */
     letter-spacing: -8px;
     text-indent: -4px;
     font-size: 37vmin;
@@ -184,10 +169,6 @@ header {
     right: 0; 
     margin-top: calc(var(--board-size) + 0.7em);
 }
-
-/* .tile2048:hover {
-      cursor: pointer;
-} */
 
 @keyframes appear {
     0% {
@@ -290,8 +271,6 @@ header {
 
     .tile2048 {
         border-radius: 40px;
-        /* height: calc((var(--board-size) - 32px) / var(--size) * 4.26); */
-        /* width: calc((var(--board-size) - 32px) / var(--size) * 4.26); */
         font-size: 173px;   
     }
 
