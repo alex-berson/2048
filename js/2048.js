@@ -349,9 +349,7 @@ const aiMode = () => {
     const urlParams = new URLSearchParams(queryString);
     const mode = urlParams.get('mode');
     
-    if (mode == 'ai') return true;
-
-    return false;
+    return mode == 'ai';
 }
 
 const init = () => {

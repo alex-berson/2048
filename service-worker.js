@@ -1,4 +1,4 @@
-const cacheName = 'cache-v1';
+const cacheName = 'cache-v2';
 const files = [
   'https://alex-berson.github.io/2048/',
   'index.html',
@@ -6,8 +6,8 @@ const files = [
   'js/2048.js',
   'js/ui.js',
   'js/ai.js',
-  'fonts/Roboto-Regular-webfont.woff',
-  'fonts/Roboto-Bold-webfont.woff'
+  'fonts/roboto-regular-webfont.woff',
+  'fonts/roboto-bold-webfont.woff'
 ];
 
 self.addEventListener('install', event => {

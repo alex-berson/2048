@@ -4,7 +4,7 @@ Pair matching tiles together to create the 2048 tile.<br>
 You can [play 2048 online](https://alex-berson.github.io/2048/) or <br>
 [<img src="images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg">](https://apps.apple.com/us/app/id6444615104)
 
-You can also watch [an AI playing 2048](https://alex-berson.github.io/2048/index.html?mode=ai) (duration: approx. 8 mins).
+You can also [watch an AI playing 2048](https://alex-berson.github.io/2048/index.html?mode=ai) (duration: approx. 8 mins).
 
 ## Description
 
